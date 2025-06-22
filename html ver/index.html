@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Ops Emergency</title>
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --danger: #e94560;
+            --warning: #ff9f1c;
+            --safe: #2ec4b6;
+            --light: #f8f8f8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--primary);
+            color: var(--light);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        /* Disguise Mode - Calculator */
+        .calculator-mode {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: #2d2d2d;
+            padding: 20px;
+        }
+        
+        .calculator-display {
+            background-color: #444;
+            color: white;
+            font-size: 3rem;
+            text-align: right;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+        
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .calc-btn {
+            background-color: #666;
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            padding: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .calc-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Emergency Mode */
+        .emergency-mode {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            padding: 20px;
+        }
+        
+        .emergency-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .emergency-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .emergency-btn {
+            aspect-ratio: 1;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .emergency-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .emergency-btn img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+        
+        .robbery-btn { background-color: var(--danger); }
+        .medical-btn { background-color: var(--safe); }
+        .fire-btn { background-color: var(--warning); }
+        .breakdown-btn { background-color: #4e9af1; }
+        
+        .active-alert {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            right: 20px;
+            background-color: rgba(233, 69, 96, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+        }
+        
+        .cancel-btn {
+            background-color: white;
+            color: var(--danger);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin-top: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* Login Screen */
+        .login-screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            padding: 30px;
+            height: 100%;
+            background-color: var(--secondary);
+        }
+        
+        .login-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2rem;
+        }
+        
+        .user-type-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+        
+        .user-type-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #444;
+            border-radius: 10px;
+            background: none;
+            color: var(--light);
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .user-type-btn.active {
+            border-color: var(--safe);
+            background-color: rgba(46, 196, 182, 0.2);
+        }
+        
+        .login-input {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .login-input::placeholder {
+            color: #aaa;
+        }
+        
+        .login-btn {
+            background-color: var(--safe);
+            color: var(--primary);
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        
+        .switch-mode {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--safe);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        
+        /* Officer View */
+        .officer-screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .officer-map {
+            height: 300px;
+            background-color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .emergency-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px;
+        }
+        
+        .emergency-card {
+            background-color: var(--secondary);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .emergency-type {
+            color: var(--danger);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .respond-btn {
+            background-color: var(--safe);
+            color: var(--primary);
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Calculator Disguise -->
+    <div class="app-container calculator-mode" id="calculatorMode">
+        <div class="calculator-display" id="calcDisplay">0</div>
+        <div class="calculator-buttons">
+            <button class="calc-btn">7</button>
+            <button class="calc-btn">8</button>
+            <button class="calc-btn">9</button>
+            <button class="calc-btn">/</button>
+            <button class="calc-btn">4</button>
+            <button class="calc-btn">5</button>
+            <button class="calc-btn">6</button>
+            <button class="calc-btn">*</button>
+            <button class="calc-btn">1</button>
+            <button class="calc-btn">2</button>
+            <button class="calc-btn">3</button>
+            <button class="calc-btn">-</button>
+            <button class="calc-btn">0</button>
+            <button class="calc-btn">.</button>
+            <button class="calc-btn">=</button>
+            <button class="calc-btn">+</button>
+        </div>
+    </div>
+    
+    <!-- Emergency Mode -->
+    <div class="app-container emergency-mode" id="emergencyMode">
+        <div class="emergency-header">
+            <h1>Emergency Alert</h1>
+        </div>
+        
+        <div class="emergency-buttons">
+            <button class="emergency-btn robbery-btn" id="robberyBtn">
+                <img src="https://cdn-icons-png.flaticon.com/512/1069/1069180.png" alt="Robbery">
+                Robbery
+            </button>
+            <button class="emergency-btn medical-btn" id="medicalBtn">
+                <img src="https://cdn-icons-png.flaticon.com/512/2965/2965300.png" alt="Medical">
+                Medical
+            </button>
+            <button class="emergency-btn fire-btn" id="fireBtn">
+                <img src="https://cdn-icons-png.flaticon.com/512/599/599502.png" alt="Fire">
+                Fire
+            </button>
+            <button class="emergency-btn breakdown-btn" id="breakdownBtn">
+                <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" alt="Breakdown">
+                Breakdown
+            </button>
+        </div>
+        
+        <div class="active-alert" id="activeAlert">
+            <h3 id="alertType">ROBBERY ALERT ACTIVE</h3>
+            <p>Law enforcement has been notified</p>
+            <button class="cancel-btn" id="cancelAlertBtn">CANCEL ALERT</button>
+        </div>
+    </div>
+    
+    <!-- Login Screen -->
+    <div class="app-container login-screen" id="loginScreen">
+        <h1 class="login-title">Black Ops Emergency</h1>
+        
+        <div class="user-type-selector">
+            <button class="user-type-btn active" id="pedestrianBtn">Pedestrian</button>
+            <button class="user-type-btn" id="officerBtn">Officer</button>
+        </div>
+        
+        <input type="email" class="login-input" id="emailInput" placeholder="Email">
+        <input type="password" class="login-input" id="passwordInput" placeholder="Password">
+        
+        <button class="login-btn" id="loginBtn">LOGIN</button>
+        <p class="switch-mode" id="switchMode">Don't have an account? Register</p>
+    </div>
+    
+    <!-- Officer Screen -->
+    <div class="app-container officer-screen" id="officerScreen">
+        <button class="logout-btn" id="officerLogoutBtn">LOGOUT</button>
+        <h1 class="login-title">Active Emergencies</h1>
+        
+        <div class="officer-map" id="officerMap">
+            <!-- Map will be rendered here -->
+        </div>
+        
+        <div class="emergency-list" id="emergencyList">
+            <!-- Emergency cards will appear here -->
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const calculatorMode = document.getElementById('calculatorMode');
+        const emergencyMode = document.getElementById('emergencyMode');
+        const loginScreen = document.getElementById('loginScreen');
+        const officerScreen = document.getElementById('officerScreen');
+        
+        // Calculator functionality
+        const calcDisplay = document.getElementById('calcDisplay');
+        const calcButtons = document.querySelectorAll('.calc-btn');
+        
+        // Emergency buttons
+        const robberyBtn = document.getElementById('robberyBtn');
+        const medicalBtn = document.getElementById('medicalBtn');
+        const fireBtn = document.getElementById('fireBtn');
+        const breakdownBtn = document.getElementById('breakdownBtn');
+        const activeAlert = document.getElementById('activeAlert');
+        const alertType = document.getElementById('alertType');
+        const cancelAlertBtn = document.getElementById('cancelAlertBtn');
+        
+        // Login elements
+        const pedestrianBtn = document.getElementById('pedestrianBtn');
+        const officerBtn = document.getElementById('officerBtn');
+        const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const switchMode = document.getElementById('switchMode');
+        
+        // Officer elements
+        const officerLogoutBtn = document.getElementById('officerLogoutBtn');
+        const emergencyList = document.getElementById('emergencyList');
+        
+        // App State
+        let currentUserType = 'pedestrian';
+        let isLoginMode = true;
+        let activeEmergency = null;
+        
+        // Initialize the app
+        function initApp() {
+            // Start with login screen
+            showLoginScreen();
+            
+            // Calculator button long press to reveal emergency mode
+            calculatorMode.addEventListener('mousedown', startLongPress);
+            calculatorMode.addEventListener('touchstart', startLongPress);
+            calculatorMode.addEventListener('mouseup', cancelLongPress);
+            calculatorMode.addEventListener('mouseleave', cancelLongPress);
+            calculatorMode.addEventListener('touchend', cancelLongPress);
+            
+            // Emergency buttons
+            robberyBtn.addEventListener('click', () => triggerEmergency('robbery'));
+            medicalBtn.addEventListener('click', () => triggerEmergency('ambulance'));
+            fireBtn.addEventListener('click', () => triggerEmergency('fire'));
+            breakdownBtn.addEventListener('click', () => triggerEmergency('breakdown'));
+            cancelAlertBtn.addEventListener('click', cancelEmergency);
+            
+            // Login screen
+            pedestrianBtn.addEventListener('click', () => setUserType('pedestrian'));
+            officerBtn.addEventListener('click', () => setUserType('officer'));
+            loginBtn.addEventListener('click', handleAuth);
+            switchMode.addEventListener('click', toggleAuthMode);
+            
+            // Officer screen
+            officerLogoutBtn.addEventListener('click', logout);
+            
+            // Calculator buttons
+            calcButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const value = button.textContent;
+                    handleCalcInput(value);
+                });
+            });
+            
+            // Simulate shake detection
+            window.addEventListener('devicemotion', handleShake);
+        }
+        
+        // Show different screens
+        function showCalculatorMode() {
+            hideAllScreens();
+            calculatorMode.style.display = 'flex';
+        }
+        
+        function showEmergencyMode() {
+            hideAllScreens();
+            emergencyMode.style.display = 'flex';
+        }
+        
+        function showLoginScreen() {
+            hideAllScreens();
+            loginScreen.style.display = 'flex';
+        }
+        
+        function showOfficerScreen() {
+            hideAllScreens();
+            officerScreen.style.display = 'flex';
+            simulateIncomingEmergencies();
+        }
+        
+        function hideAllScreens() {
+            calculatorMode.style.display = 'none';
+            emergencyMode.style.display = 'none';
+            loginScreen.style.display = 'none';
+            officerScreen.style.display = 'none';
+        }
+        
+        // Long press to reveal emergency mode
+        let longPressTimer;
+        
+        function startLongPress() {
+            longPressTimer = setTimeout(() => {
+                showEmergencyMode();
+            }, 1500);
+        }
+        
+        function cancelLongPress() {
+            clearTimeout(longPressTimer);
+        }
+        
+        // Shake detection
+        function handleShake(event) {
+            const acceleration = event.accelerationIncludingGravity;
+            const shakeThreshold = 15;
+            
+            if (acceleration && 
+                (Math.abs(acceleration.x) > shakeThreshold || 
+                 Math.abs(acceleration.y) > shakeThreshold || 
+                 Math.abs(acceleration.z) > shakeThreshold)) {
+                triggerEmergency('robbery');
+            }
+        }
+        
+        // Emergency functions
+        function triggerEmergency(type) {
+            activeEmergency = type;
+            alertType.textContent = `${type.toUpperCase()} ALERT ACTIVE`;
+            activeAlert.style.display = 'block';
+            
+            // In a real app, this would send to backend
+            console.log(`Emergency triggered: ${type}`);
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(500);
+            }
+            
+            // Simulate sending to SAPS
+            setTimeout(() => {
+                alert(`Emergency alert sent to authorities: ${type}`);
+            }, 2000);
+        }
+        
+        function cancelEmergency() {
+            activeEmergency = null;
+            activeAlert.style.display = 'none';
+            console.log('Emergency cancelled');
+        }
+        
+        // Login functions
+        function setUserType(type) {
+            currentUserType = type;
+            if (type === 'pedestrian') {
+                pedestrianBtn.classList.add('active');
+                officerBtn.classList.remove('active');
+            } else {
+                pedestrianBtn.classList.remove('active');
+                officerBtn.classList.add('active');
+            }
+        }
+        
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            loginBtn.textContent = isLoginMode ? 'LOGIN' : 'REGISTER';
+            switchMode.textContent = isLoginMode 
+                ? "Don't have an account? Register" 
+                : "Already have an account? Login";
+        }
+        
+        function handleAuth() {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            
+            if (!email || !password) {
+                alert('Please enter both email and password');
+                return;
+            }
+            
+            // In a real app, this would authenticate with Firebase
+            console.log(`${isLoginMode ? 'Login' : 'Register'} as ${currentUserType}: ${email}`);
+            
+            // Simulate successful auth
+            if (currentUserType === 'pedestrian') {
+                showCalculatorMode();
+            } else {
+                showOfficerScreen();
+            }
+        }
+        
+        function logout() {
+            showLoginScreen();
+        }
+        
+        // Officer functions
+        function simulateIncomingEmergencies() {
+            // Clear existing emergencies
+            emergencyList.innerHTML = '';
+            
+            // Sample emergencies
+            const emergencies = [
+                { type: 'robbery', location: 'CBD, Johannesburg', time: '2 min ago' },
+                { type: 'fire', location: 'Soweto', time: '5 min ago' },
+                { type: 'medical', location: 'Sandton', time: '8 min ago' }
+            ];
+            
+            emergencies.forEach(emergency => {
+                const card = document.createElement('div');
+                card.className = 'emergency-card';
+                card.innerHTML = `
+                    <div class="emergency-type">${emergency.type.toUpperCase()}</div>
+                    <div>Location: ${emergency.location}</div>
+                    <div>Reported: ${emergency.time}</div>
+                    <button class="respond-btn">RESPOND</button>
+                `;
+                emergencyList.appendChild(card);
+            });
+        }
+        
+        // Calculator functions
+        function handleCalcInput(value) {
+            if (value === '=') {
+                try {
+                    calcDisplay.textContent = eval(calcDisplay.textContent);
+                } catch {
+                    calcDisplay.textContent = 'Error';
+                }
+            } else if (calcDisplay.textContent === '0' || calcDisplay.textContent === 'Error') {
+                calcDisplay.textContent = value;
+            } else {
+                calcDisplay.textContent += value;
+            }
+        }
+        
+        // Start the app
+        initApp();
+    </script>
+</body>
+</html>

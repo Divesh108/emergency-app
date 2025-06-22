@@ -1,0 +1,71 @@
+Key Features Implemented:
+Dual Interface:
+
+Calculator disguise (long press to reveal)
+
+Emergency mode with 4 alert types
+
+Authentication Flow:
+
+Pedestrian vs officer login
+
+Toggle between login/register
+
+Officer Dashboard:
+
+Emergency list with respond buttons
+
+Map placeholder (can integrate Google Maps API)
+
+Emergency Features:
+
+Shake detection (test in mobile)
+
+Alert confirmation screen
+
+Cancel functionality
+
+Responsive Design:
+
+Works on mobile and desktop
+
+Touch-friendly buttons
+
+How to Use This Preview:
+As a Pedestrian:
+
+Long press calculator to access emergency mode
+
+Click any emergency button to trigger alert
+
+Cancel alerts with the button
+
+As an Officer:
+
+Select "Officer" on login screen
+
+View incoming emergencies
+
+Click "Respond" on emergency cards
+
+To Make This Fully Functional:
+Add Firebase integration:
+
+javascript
+// Replace the mock auth with real Firebase auth
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+Add real map integration:
+
+html
+<!-- Add Google Maps API -->
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY&callback=initMap"></script>
+Enable real notifications:
+
+javascript
+// Use Firebase Cloud Messaging
+import { getMessaging, getToken } from "firebase/messaging";
+Add backend connectivity:
+
+javascript
+// Connect to Firestore for real-time updates
+import { getFirestore, collection, onSnapshot } from "firebase/firestore";
