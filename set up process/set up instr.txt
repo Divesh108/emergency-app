@@ -1,0 +1,51 @@
+Deployment Instructions
+Set up Firebase:
+
+Create a Firebase project
+
+Enable Authentication (Email/Password)
+
+Enable Firestore database
+
+Set up security rules
+
+Add your Firebase config to firebase.js
+
+Install dependencies:
+
+bash
+expo install expo-notifications expo-location expo-camera react-native-maps
+expo install firebase @react-navigation/native @react-navigation/stack
+npm install crypto-js react-native-sms
+Configure Push Notifications:
+
+Set up Expo push notification certificates
+
+Configure Firebase Cloud Messaging
+
+Run the app:
+
+bash
+expo start
+Build for production:
+
+bash
+expo build:android
+expo build:ios
+This complete implementation includes:
+
+Separate login for pedestrians and law enforcement
+
+Real-time map showing emergencies to law enforcement
+
+Panic button that notifies all nearby officers
+
+Full security features
+
+Offline capabilities
+
+SAPS integration
+
+Complete UI with emergency buttons and location tracking
+
+The code is ready to be copied and pasted into your IDE. Make sure to configure all the necessary API keys and services mentioned in the comments.

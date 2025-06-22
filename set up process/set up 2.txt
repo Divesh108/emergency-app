@@ -1,0 +1,167 @@
+Here's a step-by-step guide to set up and deploy the Black Ops Emergency App:
+
+### 1. **Prerequisites Setup**
+```bash
+# Install required tools
+npm install -g expo-cli firebase-tools
+```
+
+### 2. **Firebase Configuration**
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create new project ? "BlackOpsEmergency"
+3. Enable these services:
+   - **Authentication** (Email/Password)
+   - **Firestore Database** (Start in test mode)
+   - **Cloud Messaging** (for push notifications)
+
+4. Get your Firebase config:
+```javascript
+// Replace in firebase.js
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+```
+
+### 3. **Install Dependencies**
+```bash
+cd BlackOpsEmergency
+npm install
+expo install expo-notifications expo-location expo-camera react-native-maps
+npm install firebase @react-navigation/native @react-navigation/stack crypto-js react-native-sms
+```
+
+### 4. **Environment Setup**
+1. Create `.env` file:
+```env
+FIREBASE_API_KEY=your_api_key
+FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+ENCRYPTION_SECRET=your_secure_secret_key
+SMSPORTAL_API_KEY=your_sms_api_key
+```
+
+2. Update `app.json` with your:
+   - `bundleIdentifier` (iOS)
+   - `package` (Android)
+   - `googleServicesFile` (if using Google Sign-In)
+
+### 5. **Database Rules**
+Set Firestore rules (in Firebase Console ? Firestore ? Rules):
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /emergencies/{emergency} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      
+      // Auto-delete after 72h if not evidence
+      function isExpired() {
+        return request.time > resource.data.createdAt + duration.value(72, 'h');
+      }
+      match /{document=**} {
+        allow delete: if isExpired() && resource.data.status != 'EVIDENCE';
+      }
+    }
+    
+    match /users/{userId} {
+      allow read, write: if request.auth.uid == userId;
+    }
+  }
+}
+```
+
+### 6. **Push Notifications Setup**
+1. For Expo:
+```bash
+expo install expo-notifications
+expo push:android:upload --api-key YOUR_FCM_KEY
+expo push:ios:upload
+```
+
+2. For Firebase:
+   - Download `google-services.json` (Android) and `GoogleService-Info.plist` (iOS)
+   - Place in project root
+
+### 7. **Run the App**
+```bash
+# Development mode
+expo start
+
+# Production build
+expo build:android
+expo build:ios
+```
+
+### 8. **Deployment Checklist**
+1. **Backend**:
+```bash
+firebase deploy --only firestore,functions
+```
+
+2. **Mobile Apps**:
+   - Android: Submit to Google Play Store
+   - iOS: Submit to App Store (requires Apple Developer account)
+
+3. **Admin Dashboard**:
+```bash
+cd admin
+npm run build
+firebase deploy --hosting
+```
+
+### 9. **Testing**
+Test these critical flows:
+1. **Pedestrian**:
+   - Emergency button press ? Verify SAPS notification
+   - Location tracking accuracy
+   - Offline SMS fallback
+
+2. **Officer**:
+   - Real-time emergency alerts
+   - Map view with live locations
+   - Evidence collection workflow
+
+### 10. **Maintenance Setup**
+1. Monitoring:
+   - Firebase Crashlytics
+   - Expo Application Services (EAS)
+
+2. Update cycle:
+```bash
+# For OTA updates (minor changes)
+expo publish --release-channel production
+```
+
+### Troubleshooting Tips:
+1. If maps don't work:
+   - Get Google Maps API key
+   - Add to `app.json`:
+     ```json
+     "android": {
+       "config": {
+         "googleMaps": { "apiKey": "YOUR_KEY" }
+       }
+     }
+     ```
+
+2. If notifications fail:
+   - Verify FCM setup
+   - Check device token registration
+
+3. For Firestore permission errors:
+   - Review security rules
+   - Check authentication state
+
+This setup gives you a production-ready emergency response system with:
+- ? End-to-end encryption
+- ? Real-time officer dispatch
+- ? Offline capabilities
+- ? Evidence preservation
+- ? Multi-platform support
+
+Would you like me to elaborate on any specific part of the setup process?
