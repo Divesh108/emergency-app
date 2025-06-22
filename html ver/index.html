@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Black Ops Emergency</title>
     <style>
         :root {
@@ -19,6 +19,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
@@ -26,12 +27,14 @@
             color: var(--light);
             height: 100vh;
             overflow: hidden;
+            touch-action: manipulation;
         }
         
         .app-container {
             display: flex;
             flex-direction: column;
             height: 100%;
+            width: 100%;
         }
         
         /* Disguise Mode - Calculator */
@@ -40,38 +43,43 @@
             flex-direction: column;
             height: 100%;
             background-color: #2d2d2d;
-            padding: 20px;
+            padding: 15px;
         }
         
         .calculator-display {
             background-color: #444;
             color: white;
-            font-size: 3rem;
+            font-size: 2.5rem;
             text-align: right;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .calculator-buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 8px;
+            flex: 1;
         }
         
         .calc-btn {
             background-color: #666;
             color: white;
             border: none;
-            font-size: 1.5rem;
-            padding: 20px;
+            font-size: 1.3rem;
+            padding: 15px 5px;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.1s;
+            min-height: 50px;
         }
         
         .calc-btn:active {
             transform: scale(0.95);
+            background-color: #777;
         }
         
         /* Emergency Mode */
@@ -79,35 +87,41 @@
             display: none;
             flex-direction: column;
             height: 100%;
-            padding: 20px;
+            padding: 15px;
         }
         
         .emergency-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .emergency-header h1 {
+            font-size: 1.5rem;
         }
         
         .emergency-buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-top: 20px;
+            gap: 15px;
+            margin-top: 15px;
+            flex: 1;
         }
         
         .emergency-btn {
             aspect-ratio: 1;
-            border-radius: 20px;
+            border-radius: 15px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.1s;
             border: none;
             color: white;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1rem;
+            padding: 10px;
         }
         
         .emergency-btn:active {
@@ -115,9 +129,9 @@
         }
         
         .emergency-btn img {
-            width: 50px;
-            height: 50px;
-            margin-bottom: 10px;
+            width: 40px;
+            height: 40px;
+            margin-bottom: 8px;
         }
         
         .robbery-btn { background-color: var(--danger); }
@@ -127,25 +141,36 @@
         
         .active-alert {
             position: fixed;
-            bottom: 30px;
-            left: 20px;
-            right: 20px;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
             background-color: rgba(233, 69, 96, 0.9);
-            padding: 20px;
-            border-radius: 15px;
+            padding: 15px;
+            border-radius: 12px;
             text-align: center;
             display: none;
+            z-index: 100;
+        }
+        
+        .active-alert h3 {
+            font-size: 1.1rem;
+        }
+        
+        .active-alert p {
+            font-size: 0.9rem;
+            margin-top: 5px;
         }
         
         .cancel-btn {
             background-color: white;
             color: var(--danger);
             border: none;
-            padding: 10px 20px;
+            padding: 8px 15px;
             border-radius: 50px;
-            margin-top: 15px;
+            margin-top: 10px;
             font-weight: bold;
             cursor: pointer;
+            font-size: 0.9rem;
         }
         
         /* Login Screen */
@@ -153,33 +178,34 @@
             display: none;
             flex-direction: column;
             justify-content: center;
-            padding: 30px;
+            padding: 20px;
             height: 100%;
             background-color: var(--secondary);
         }
         
         .login-title {
             text-align: center;
-            margin-bottom: 40px;
-            font-size: 2rem;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
         }
         
         .user-type-selector {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 30px;
-            gap: 10px;
+            margin-bottom: 20px;
+            gap: 8px;
         }
         
         .user-type-btn {
             flex: 1;
-            padding: 15px;
+            padding: 12px;
             border: 2px solid #444;
-            border-radius: 10px;
+            border-radius: 8px;
             background: none;
             color: var(--light);
             font-weight: bold;
             cursor: pointer;
+            font-size: 0.9rem;
         }
         
         .user-type-btn.active {
@@ -190,11 +216,11 @@
         .login-input {
             background-color: rgba(255, 255, 255, 0.1);
             border: none;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
             color: white;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
         
         .login-input::placeholder {
@@ -205,20 +231,21 @@
             background-color: var(--safe);
             color: var(--primary);
             border: none;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 8px;
             font-weight: bold;
-            font-size: 1.1rem;
-            margin-top: 10px;
+            font-size: 1rem;
+            margin-top: 8px;
             cursor: pointer;
         }
         
         .switch-mode {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 15px;
             color: var(--safe);
             text-decoration: underline;
             cursor: pointer;
+            font-size: 0.9rem;
         }
         
         /* Officer View */
@@ -226,56 +253,76 @@
             display: none;
             flex-direction: column;
             height: 100%;
+            padding: 15px;
         }
         
         .officer-map {
-            height: 300px;
+            height: 200px;
             background-color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
         }
         
         .emergency-list {
             flex: 1;
             overflow-y: auto;
-            padding: 0 20px;
+            padding: 0 5px;
         }
         
         .emergency-card {
             background-color: var(--secondary);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
         }
         
         .emergency-type {
             color: var(--danger);
             font-weight: bold;
             margin-bottom: 5px;
+            font-size: 1rem;
         }
         
         .respond-btn {
             background-color: var(--safe);
             color: var(--primary);
             border: none;
-            padding: 10px;
+            padding: 8px;
             border-radius: 5px;
             width: 100%;
-            margin-top: 10px;
+            margin-top: 8px;
             font-weight: bold;
             cursor: pointer;
+            font-size: 0.9rem;
         }
         
         .logout-btn {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             background-color: var(--danger);
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 6px 12px;
             border-radius: 50px;
             font-weight: bold;
             cursor: pointer;
+            font-size: 0.8rem;
+            z-index: 10;
+        }
+        
+        /* Long press instructions */
+        .long-press-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #aaa;
+            font-size: 0.8rem;
+            padding: 5px;
+            display: none;
         }
     </style>
 </head>
@@ -301,6 +348,7 @@
             <button class="calc-btn">=</button>
             <button class="calc-btn">+</button>
         </div>
+        <div class="long-press-hint" id="longPressHint">Long press any button to access emergency mode</div>
     </div>
     
     <!-- Emergency Mode -->
@@ -371,6 +419,7 @@
         const emergencyMode = document.getElementById('emergencyMode');
         const loginScreen = document.getElementById('loginScreen');
         const officerScreen = document.getElementById('officerScreen');
+        const longPressHint = document.getElementById('longPressHint');
         
         // Calculator functionality
         const calcDisplay = document.getElementById('calcDisplay');
@@ -401,22 +450,35 @@
         let currentUserType = 'pedestrian';
         let isLoginMode = true;
         let activeEmergency = null;
+        let longPressTimer;
         
         // Initialize the app
         function initApp() {
             // Start with login screen
             showLoginScreen();
             
+            // Show long press hint after delay
+            setTimeout(() => {
+                if (calculatorMode.style.display === 'flex') {
+                    longPressHint.style.display = 'block';
+                    setTimeout(() => {
+                        longPressHint.style.display = 'none';
+                    }, 3000);
+                }
+            }, 2000);
+            
             // Calculator button long press to reveal emergency mode
-            calculatorMode.addEventListener('mousedown', startLongPress);
-            calculatorMode.addEventListener('touchstart', startLongPress);
-            calculatorMode.addEventListener('mouseup', cancelLongPress);
-            calculatorMode.addEventListener('mouseleave', cancelLongPress);
-            calculatorMode.addEventListener('touchend', cancelLongPress);
+            calcButtons.forEach(button => {
+                button.addEventListener('touchstart', startLongPress);
+                button.addEventListener('touchend', cancelLongPress);
+                button.addEventListener('mousedown', startLongPress);
+                button.addEventListener('mouseup', cancelLongPress);
+                button.addEventListener('click', handleCalcButtonClick);
+            });
             
             // Emergency buttons
             robberyBtn.addEventListener('click', () => triggerEmergency('robbery'));
-            medicalBtn.addEventListener('click', () => triggerEmergency('ambulance'));
+            medicalBtn.addEventListener('click', () => triggerEmergency('medical'));
             fireBtn.addEventListener('click', () => triggerEmergency('fire'));
             breakdownBtn.addEventListener('click', () => triggerEmergency('breakdown'));
             cancelAlertBtn.addEventListener('click', cancelEmergency);
@@ -429,14 +491,6 @@
             
             // Officer screen
             officerLogoutBtn.addEventListener('click', logout);
-            
-            // Calculator buttons
-            calcButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const value = button.textContent;
-                    handleCalcInput(value);
-                });
-            });
             
             // Simulate shake detection
             window.addEventListener('devicemotion', handleShake);
@@ -456,6 +510,9 @@
         function showLoginScreen() {
             hideAllScreens();
             loginScreen.style.display = 'flex';
+            // Reset form
+            emailInput.value = '';
+            passwordInput.value = '';
         }
         
         function showOfficerScreen() {
@@ -472,20 +529,28 @@
         }
         
         // Long press to reveal emergency mode
-        let longPressTimer;
-        
-        function startLongPress() {
+        function startLongPress(e) {
+            e.preventDefault();
             longPressTimer = setTimeout(() => {
                 showEmergencyMode();
-            }, 1500);
+            }, 1000);
         }
         
         function cancelLongPress() {
             clearTimeout(longPressTimer);
         }
         
+        function handleCalcButtonClick(e) {
+            const value = e.target.textContent;
+            handleCalcInput(value);
+        }
+        
         // Shake detection
+        let lastShakeTime = 0;
         function handleShake(event) {
+            const now = Date.now();
+            if (now - lastShakeTime < 2000) return; // Debounce shakes
+            
             const acceleration = event.accelerationIncludingGravity;
             const shakeThreshold = 15;
             
@@ -493,6 +558,7 @@
                 (Math.abs(acceleration.x) > shakeThreshold || 
                  Math.abs(acceleration.y) > shakeThreshold || 
                  Math.abs(acceleration.z) > shakeThreshold)) {
+                lastShakeTime = now;
                 triggerEmergency('robbery');
             }
         }
@@ -507,13 +573,13 @@
             console.log(`Emergency triggered: ${type}`);
             
             if (navigator.vibrate) {
-                navigator.vibrate(500);
+                navigator.vibrate([200, 100, 200]);
             }
             
-            // Simulate sending to SAPS
+            // Simulate sending to authorities
             setTimeout(() => {
                 alert(`Emergency alert sent to authorities: ${type}`);
-            }, 2000);
+            }, 1500);
         }
         
         function cancelEmergency() {
@@ -551,7 +617,7 @@
                 return;
             }
             
-            // In a real app, this would authenticate with Firebase
+            // In a real app, this would authenticate with backend
             console.log(`${isLoginMode ? 'Login' : 'Register'} as ${currentUserType}: ${email}`);
             
             // Simulate successful auth
@@ -575,7 +641,8 @@
             const emergencies = [
                 { type: 'robbery', location: 'CBD, Johannesburg', time: '2 min ago' },
                 { type: 'fire', location: 'Soweto', time: '5 min ago' },
-                { type: 'medical', location: 'Sandton', time: '8 min ago' }
+                { type: 'medical', location: 'Sandton', time: '8 min ago' },
+                { type: 'breakdown', location: 'M1 Highway', time: '12 min ago' }
             ];
             
             emergencies.forEach(emergency => {
@@ -588,6 +655,11 @@
                     <button class="respond-btn">RESPOND</button>
                 `;
                 emergencyList.appendChild(card);
+                
+                // Add click handler to respond button
+                card.querySelector('.respond-btn').addEventListener('click', () => {
+                    alert(`You are now responding to ${emergency.type} at ${emergency.location}`);
+                });
             });
         }
         
@@ -607,7 +679,7 @@
         }
         
         // Start the app
-        initApp();
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
